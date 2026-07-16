@@ -1,6 +1,6 @@
 from fastapi import APIRouter, UploadFile, File, Depends
 from sqlalchemy.orm import Session
-from app.services.parser_service import extract_pdf_text, parse_resume
+from app.services.parser.resume_parser import parse_resume
 
 from app.database.connection import get_db
 from app.models.resume import Resume
@@ -34,17 +34,12 @@ def upload_resume(
     db.commit()
     db.refresh(resume)
 
-    # Extract text
-    if file.filename.lower().endswith(".pdf"):
-        text = extract_pdf_text(file_path)
-    else:
-        return {
-            "error": "Only PDF support added for now."
-        }
+    if not file.filename.lower().endswith(".pdf"):
+      return {
+        "error": "Only PDF files are supported for now."
+    }
 
-    # Parse resume
-    parsed_data = parse_resume(text)
-
+    parsed_data = parse_resume(file_path)
     return {
         "resume_id": resume.id,
         "file_name": resume.file_name,
