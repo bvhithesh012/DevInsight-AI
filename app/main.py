@@ -2,6 +2,7 @@ from app.api.auth import router as auth_router
 from fastapi import FastAPI
 from sqlalchemy import text
 from app.api.resume import router as resume_router
+from app.api.github import router as github_router
 
 from app.core.config import settings
 from app.database.connection import engine
@@ -12,6 +13,7 @@ app = FastAPI(
 )
 app.include_router(auth_router)
 app.include_router(resume_router)
+app.include_router(github_router)
 
 @app.get("/")
 def root():
