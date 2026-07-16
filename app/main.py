@@ -1,8 +1,11 @@
 from fastapi import FastAPI
+from sqlalchemy import text
+
+from app.core.config import settings
+from app.database.connection import engine
 
 app = FastAPI(
     title="DevInsight AI",
-    description="AI-powered Developer Hiring & Evaluation Platform",
     version="1.0.0"
 )
 
@@ -10,13 +13,22 @@ app = FastAPI(
 @app.get("/")
 def root():
     return {
-        "message": "Welcome to DevInsight AI 🚀"
+        "message": "DevInsight AI Backend Running"
     }
 
 
-@app.get("/health")
-def health_check():
-    return {
-        "status": "Healthy",
-        "service": "DevInsight AI Backend"
-    }
+@app.get("/db-check")
+def db_check():
+    try:
+        with engine.connect() as connection:
+            connection.execute(text("SELECT 1"))
+
+        return {
+            "database": "Connected Successfully ✅"
+        }
+
+    except Exception as e:
+        return {
+            "database": "Connection Failed ❌",
+            "error": str(e)
+        }
